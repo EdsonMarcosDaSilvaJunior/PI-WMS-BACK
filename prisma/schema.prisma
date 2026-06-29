@@ -8,8 +8,45 @@ generator client {
 }
 
 model Product {
-  id    Int     @id @default(autoincrement())
-  name  String
-  price Float
-  stock Int
+  id        Int        @id @default(autoincrement())
+  name      String
+  price     Float
+  stock     Int
+  movements Movement[] 
+  orders    Order[]
 }
+
+model Movement {
+  id        Int      @id @default(autoincrement())
+  type      String  
+  quantity  Int
+  createdAt DateTime @default(now())
+
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+model User {
+  id               Int       @id @default(autoincrement())
+  name             String
+  email            String    @unique
+  password         String
+  
+  // Novos campos para a recuperação de senha
+  resetCode        String?  
+  resetCodeExpires DateTime? 
+}
+
+model Order {
+  id           Int      @id @default(autoincrement())
+  customerName String   // Nome do cliente
+  quantity     Int      // Quantidade pedida
+  status       String   // "Pendente" ou "Separado"
+  createdAt    DateTime @default(now())
+  
+  productId    Int
+  product      Product  @relation(fields: [productId], references: [id])
+
+  
+}
+

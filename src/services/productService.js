@@ -9,3 +9,25 @@ export async function createProduct(data) {
     data,
   });
 }
+
+
+export async function updateProduct(id, data) {
+  return await prisma.product.update({
+    where: { id: Number(id) }, 
+    data,
+  });
+}
+
+// Excluir um produto
+export async function deleteProduct(id) {
+
+  await prisma.movement.deleteMany({
+    where: {
+      productId: Number(id)
+    }
+  });
+
+  return await prisma.product.delete({
+    where: { id: Number(id) },
+  });
+}
