@@ -10,7 +10,6 @@ export async function createProduct(data) {
   });
 }
 
-
 export async function updateProduct(id, data) {
   return await prisma.product.update({
     where: { id: Number(id) }, 
@@ -18,15 +17,9 @@ export async function updateProduct(id, data) {
   });
 }
 
-// Excluir um produto
+// excluir um produto com cascata automática com o DB
 export async function deleteProduct(id) {
-
-  await prisma.movement.deleteMany({
-    where: {
-      productId: Number(id)
-    }
-  });
-
+ 
   return await prisma.product.delete({
     where: { id: Number(id) },
   });

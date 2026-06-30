@@ -23,7 +23,8 @@ model Movement {
   createdAt DateTime @default(now())
 
   productId Int
-  product   Product  @relation(fields: [productId], references: [id])
+  // onDelete: Cascade
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model User {
@@ -32,7 +33,7 @@ model User {
   email            String    @unique
   password         String
   
-  // Novos campos para a recuperação de senha
+  // campos para a recuperação de senha
   resetCode        String?  
   resetCodeExpires DateTime? 
 }
@@ -45,8 +46,6 @@ model Order {
   createdAt    DateTime @default(now())
   
   productId    Int
-  product      Product  @relation(fields: [productId], references: [id])
-
-  
+  // onDelete: Cascade
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
-

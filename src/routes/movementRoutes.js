@@ -5,9 +5,9 @@ import { createMovement } from "../controllers/movementController.js";
 const router = express.Router();
 const prisma = new PrismaClient();
 
-//Registrar uma nova movimentação (POST)
+//registrar uma nova movimentação (POST)
 router.post("/", createMovement);
-// Listar todo o histórico de movimentações (GET)
+// listar todo o histórico de movimentações (GET)
 router.get('/', async (req, res) => {
   try {
     const movements = await prisma.movement.findMany({

@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
   try {
     const orders = await prisma.order.findMany({
       include: {
-        product: true // Traz o nome e estoque do produto junto com o pedido
+        product: true // traz o nome e estoque do produto junto com o pedido
       },
       orderBy: {
         id: 'asc'
@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ADICIONADO: criar novo pedido
+// criar novo pedido
 router.post('/', async (req, res) => {
   const { customerName, quantity, productId } = req.body;
 
@@ -30,12 +30,12 @@ router.post('/', async (req, res) => {
     const newOrder = await prisma.order.create({
       data: {
         customerName: customerName,
-        quantity: parseInt(quantity),   // Garante que vai como número inteiro para o banco
-        status: "Pendente",             // Status inicial automático
-        productId: parseInt(productId)  // Converte o ID do produto para número inteiro
+        quantity: parseInt(quantity),   // garante que vai como número inteiro para o banco
+        status: "Pendente",             // status inicial automático
+        productId: parseInt(productId)  // converte o ID do produto para número inteiro
       },
       include: {
-        product: true // Já traz os dados do produto para preencher a linha da tabela na hora
+        product: true // já traz os dados do produto para preencher a linha da tabela na hora
       }
     });
     
@@ -53,10 +53,10 @@ router.patch('/:id/separar', async (req, res) => {
   try {
     const order = await prisma.order.findUnique({
       where: { id: parseInt(id) },
-      include: { product: true } // Precisamos saber o estoque atual
+      include: { product: true } // precisa saber o estoque atual
     });
 
-    // Validações de segurança
+    // validações de segurança
     if (!order) return res.status(404).json({ error: "Pedido não encontrado." });
     if (order.status === "Separado") return res.status(400).json({ error: "Este pedido já foi separado." });
     if (order.product.stock < order.quantity) return res.status(400).json({ error: "Estoque insuficiente para separar este pedido." });

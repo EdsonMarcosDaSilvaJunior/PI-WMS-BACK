@@ -12,14 +12,14 @@ export async function createProduct(req, res) {
 
 
 export async function updateProduct(req, res) {
-  const { id } = req.params; // Pega o ID da URL (ex: /products/1)
+  const { id } = req.params; // pega o ID da URL (ex: /products/1)
   const product = await productService.updateProduct(id, req.body);
   res.json(product);
 }
 
-// NOVO: Função para deletar
+// função para deletar
 export async function deleteProduct(req, res) {
   const { id } = req.params;
   await productService.deleteProduct(id);
-  res.status(204).send(); // Retorna "Sem Conteúdo" para confirmar a exclusão
+  res.status(204).send(); // retorna "sem conteúdo" para confirmar a exclusão
 }

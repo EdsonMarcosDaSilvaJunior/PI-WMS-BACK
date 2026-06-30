@@ -6,7 +6,6 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 // caixa de testes do mailtrap
-// Selecione "Nodemailer" na aba "SMTP Settings" dentro da sua Inbox do Mailtrap e copie o user e pass de lá
 const transporter = nodemailer.createTransport({
   host: "sandbox.smtp.mailtrap.io",
   port: 2525,
@@ -16,7 +15,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// 1. ROTA DE CADASTRO
+// rota de cadastro
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
   try {
@@ -30,7 +29,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// 2. ROTA DE LOGIN
+// rota de login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -45,22 +44,22 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// 3. ROTA DE ESQUECI A SENHA (Com proteção contra Enumeração de Usuários)
+// rota de esqueci a senha
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
   
-  // Mensagem neutra de segurança
+  // mensagem de segurança neutra
   const mensagemNeutra = "Se o e-mail digitado estiver cadastrado em nosso sistema, você receberá um código de recuperação em instantes.";
 
   try {
     const user = await prisma.user.findUnique({ where: { email } });
     
-    // SE NÃO EXISTIR: Retornamos sucesso, mas não fazemos nada no banco.
+    // caso não exista retorna sucesso, mas não faz nada no banco
     if (!user) {
       return res.status(200).json({ message: mensagemNeutra });
     }
 
-    // SE EXISTIR: Continua o fluxo normal de geração de código
+    // caso exista, continua o fluxo normal de geração de código
     const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
     const resetCodeExpires = new Date(Date.now() + 30 * 1000); // Expira em 30 segundos
 
@@ -69,7 +68,7 @@ router.post('/forgot-password', async (req, res) => {
       data: { resetCode, resetCodeExpires }
     });
 
-    // DISPARO DO E-MAIL PARA A CAIXA DE TESTES
+    // envia e-mail para caixa de testes
     await transporter.sendMail({
       from: '"WMS IFSC - Sistema" <sistema@wmsifsc.local>',
       to: email,
@@ -77,7 +76,7 @@ router.post('/forgot-password', async (req, res) => {
       text: `Olá! Seu código de recuperação é: ${resetCode}. Ele expira em 30 segundos.`
     });
 
-    // Retornamos exatamente a MESMA mensagem neutra
+    // retornamos exatamente a mesma mensagem neutra
     return res.status(200).json({ message: mensagemNeutra });
   } catch (error) {
     console.error("Erro no Mailtrap ou Banco de Dados:", error);
@@ -85,7 +84,7 @@ router.post('/forgot-password', async (req, res) => {
   }
 });
 
-// 4. ROTA DE REDEFINIR SENHA
+// rota de redefinir senha
 router.put('/reset-password', async (req, res) => {
   const { email, code, newPassword } = req.body;
   try {
@@ -97,7 +96,7 @@ router.put('/reset-password', async (req, res) => {
       return res.status(400).json({ error: "Código de recuperação inválido ou expirado." });
     }
     
-    // CORREÇÃO: Forçamos ambos a serem String (texto) e usamos o .trim() para limpar espaços extras
+    // força ambos a serem string e usam o .trim() para limpar espaços extras
     if (String(user.resetCode).trim() !== String(code).trim()) {
       return res.status(400).json({ error: "Código de recuperação inválido." });
     }
